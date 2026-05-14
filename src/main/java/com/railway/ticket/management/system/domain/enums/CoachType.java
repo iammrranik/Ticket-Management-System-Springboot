@@ -1,9 +1,10 @@
 package com.railway.ticket.management.system.domain.enums;
 
 public enum CoachType {
-    AC_FIRST_CLASS,
-    AC_2_TIER,
-    AC_3_TIER,
-    SLEEPER,
-    GENERAL
+    AC_BERTH,
+    AC_SLEEPER,
+    AC_CHAIR,
+    NON_AC_BERTH,
+    NON_AC_CHAIR,
+    SHOVAN_CHAIR
 }
