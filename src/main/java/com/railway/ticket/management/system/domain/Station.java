@@ -1,9 +1,14 @@
 package com.railway.ticket.management.system.domain;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class Station {
     private int id;
+    @NotBlank
     private String stationCode;
+    @NotBlank
     private String stationName;
+    @NotBlank
     private String city;
 
     public Station(int id, String stationCode, String stationName, String city) {

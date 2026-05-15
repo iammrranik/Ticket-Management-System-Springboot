@@ -2,10 +2,12 @@ package com.railway.ticket.management.system.api;
 
 import com.railway.ticket.management.system.domain.Ticket;
 import com.railway.ticket.management.system.service.implementation.TicketService;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/ticket")
@@ -18,19 +20,29 @@ public class TicketApi {
     }
 
     @PostMapping
-    public void save(@RequestBody Ticket ticket) {this.ticketService.save(ticket);}
+    public void save(@Valid @RequestBody Ticket ticket) {this.ticketService.save(ticket);}
 
     @PutMapping
-    public void update(@RequestBody Ticket ticket) {this.ticketService.update(ticket);}
+    public void update(@Valid @RequestBody Ticket ticket) {this.ticketService.update(ticket);}
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {this.ticketService.deleteById(id);}
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        int result = this.ticketService.deleteById(id);
+        if (result > 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @GetMapping("/{id}")
-    public Optional<Ticket> findById(@PathVariable int id) {return this.ticketService.findById(id);}
+    public ResponseEntity<Ticket> findById(@PathVariable int id) {
+        return this.ticketService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-    @GetMapping("/{page}/{size}")
-    public List<Ticket> findAll(@PathVariable int page, @PathVariable int size) {
+    @GetMapping
+    public List<Ticket> findAll(@RequestParam int page, @RequestParam int size) {
         return this.ticketService.findAll(page, size);
     }
 
@@ -45,7 +57,7 @@ public class TicketApi {
     }
 
     @PostMapping("/book")
-    public Ticket book(@RequestBody Ticket ticket) {return this.ticketService.bookTicket(ticket);}
+    public Ticket book(@Valid @RequestBody Ticket ticket) {return this.ticketService.bookTicket(ticket);}
 
     @PostMapping("/return/{id}")
     public Ticket returnTicket(@PathVariable int id) {return this.ticketService.returnTicket(id);}

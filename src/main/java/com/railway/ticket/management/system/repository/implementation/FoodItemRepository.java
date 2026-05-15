@@ -134,6 +134,20 @@ public class FoodItemRepository implements IFoodItemRepository {
         return namedParameterJdbcTemplate.update(sql, params);
     }
 
+    @Override
+    public int deductFoodItemQuantity(int foodItemId, int quantity) {
+        String sql = """
+                UPDATE food_items
+                SET available_quantity = available_quantity - :quantity
+                WHERE id = :id AND available_quantity >= :quantity
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", foodItemId)
+                .addValue("quantity", quantity);
+        return namedParameterJdbcTemplate.update(sql, params);
+    }
+
+    @Override
     public boolean isFoodAvailable(int foodItemId, int requestedQuantity) {
         String sql = """
                 SELECT available_quantity

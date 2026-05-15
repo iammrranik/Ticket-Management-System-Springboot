@@ -4,7 +4,6 @@ Railway Ticket Management System - API Reference
 1. User Management
 ==================
 Action,Method,Endpoint,Sample JSON Body / Parameters
-Register,POST,/api/user/register,"{ ""username"": ""arif"", ""password"": ""pass123"", ""email"": ""arif@mail.com"", ""fullName"": ""Arif Ahmed"", ""role"": ""USER"" }"
 Login,POST,/api/user/login,"{ ""username"": ""arif"", ""password"": ""pass123"" }"
 Save,POST,/api/user,"{ ""username"": ""arif"", ""password"": ""pass123"", ""email"": ""arif@mail.com"", ""fullName"": ""Arif Ahmed"", ""role"": ""USER"" }"
 Update,PUT,/api/user,"{ ""id"": 1, ""username"": ""arif"", ""password"": ""newpass"", ""email"": ""arif@mail.com"", ""fullName"": ""Arif Rahman"", ""role"": ""USER"" }"

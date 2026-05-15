@@ -1,9 +1,15 @@
 package com.railway.ticket.management.system.domain;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 public class ReturnPolicy {
     private int id;
+    @NotBlank
     private String policyName;
+    @Positive
     private int hoursBeforeDeparture;
+    @Positive
     private float deductionPercentage;
 
     public ReturnPolicy(int id, String policyName, int hoursBeforeDeparture, float deductionPercentage) {

@@ -15,4 +15,5 @@ public interface IFoodItemRepository {
     int deleteById(int id);
     int updateFoodItemAvailableQuantity(int foodItemId, int quantity);
     boolean isFoodAvailable(int foodItemId, int requestedQuantity);
+    int deductFoodItemQuantity(int foodItemId, int quantity);
 }

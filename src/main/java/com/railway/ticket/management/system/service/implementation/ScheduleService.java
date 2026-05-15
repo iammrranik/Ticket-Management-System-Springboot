@@ -4,6 +4,7 @@ import com.railway.ticket.management.system.domain.Schedule;
 import com.railway.ticket.management.system.repository.implementation.ScheduleRepository;
 import com.railway.ticket.management.system.service.IScheduleService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,7 @@ public class ScheduleService implements IScheduleService {
     }
 
     @Override
+    @Transactional
     public Schedule save(Schedule schedule) {
         scheduleRepository.save(schedule);
         return schedule;
@@ -55,16 +57,19 @@ public class ScheduleService implements IScheduleService {
     }
 
     @Override
+    @Transactional
     public int update(Schedule schedule) {
         return scheduleRepository.update(schedule);
     }
 
     @Override
+    @Transactional
     public int deleteById(int id) {
         return scheduleRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public int updateScheduleTime(int scheduleId, LocalDateTime newDeparture, LocalDateTime newArrival) {
         return scheduleRepository.updateScheduleTime(scheduleId, newDeparture, newArrival);
     }

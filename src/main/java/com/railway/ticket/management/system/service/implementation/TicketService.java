@@ -1,24 +1,35 @@
 package com.railway.ticket.management.system.service.implementation;
 
+import com.railway.ticket.management.system.domain.ReturnPolicy;
+import com.railway.ticket.management.system.domain.Schedule;
 import com.railway.ticket.management.system.domain.Ticket;
 import com.railway.ticket.management.system.domain.enums.TicketStatus;
+import com.railway.ticket.management.system.repository.implementation.ReturnPolicyRepository;
+import com.railway.ticket.management.system.repository.implementation.ScheduleRepository;
 import com.railway.ticket.management.system.repository.implementation.TicketRepository;
 import com.railway.ticket.management.system.service.ITicketService;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class TicketService implements ITicketService {
 
     private final TicketRepository ticketRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final ReturnPolicyRepository returnPolicyRepository;
 
-    public TicketService(TicketRepository ticketRepository) {
+    public TicketService(TicketRepository ticketRepository,
+                         ScheduleRepository scheduleRepository,
+                         ReturnPolicyRepository returnPolicyRepository) {
         this.ticketRepository = ticketRepository;
+        this.scheduleRepository = scheduleRepository;
+        this.returnPolicyRepository = returnPolicyRepository;
     }
 
     @Override
@@ -63,31 +74,65 @@ public class TicketService implements ITicketService {
     }
 
     @Override
-    @Async
     @Transactional
-    public synchronized Ticket bookTicket(Ticket ticket) {
+    public Ticket bookTicket(Ticket ticket) {
         ticket.setBookingTime(LocalDateTime.now());
-        ticket.setStatus(TicketStatus.CONFIRMED);
+        ticket.setStatus(TicketStatus.BOOKED);
         ticket.setRefundAmount(0);
         ticketRepository.save(ticket);
         return ticket;
     }
 
     @Override
-    @Async
     @Transactional
-    public synchronized Ticket returnTicket(int ticketId) {
+    public Ticket returnTicket(int ticketId) {
         Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
-        if (optionalTicket.isPresent()) {
-            Ticket ticket = optionalTicket.get();
-            ticket.setStatus(TicketStatus.RETURNED);
-            ticket.setActualReturnTimestamp(LocalDateTime.now());
-            float refundAmount = ticket.getTotalAmount() * 0.9f;
-            ticket.setRefundAmount(refundAmount);
-            ticketRepository.updateTicketStatusAndRefund(ticketId, TicketStatus.RETURNED.name(), refundAmount, LocalDateTime.now());
-            return ticket;
+        if (optionalTicket.isEmpty()) {
+            throw new RuntimeException("Ticket not found with id: " + ticketId);
         }
-        return null;
+        Ticket ticket = optionalTicket.get();
+
+        if (ticket.getStatus() == TicketStatus.RETURNED) {
+            throw new RuntimeException("Ticket already returned with id: " + ticketId);
+        }
+
+        Optional<Schedule> schedule = scheduleRepository.findById(ticket.getScheduleId());
+        if (schedule.isEmpty()) {
+            throw new RuntimeException("Schedule not found for ticket id: " + ticketId);
+        }
+
+        LocalDateTime departureTime = schedule.get().getDepartureTime();
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.isAfter(departureTime)) {
+            throw new RuntimeException("Cannot return ticket after departure for ticket id: " + ticketId);
+        }
+
+        long hoursDifference = Duration.between(now, departureTime).toHours();
+        float refundAmount = getRefundAmount(ticket, hoursDifference);
+
+        ticketRepository.updateTicketStatusAndRefund(
+                ticketId,
+                TicketStatus.RETURNED.name(),
+                refundAmount,
+                now
+        );
+        ticket.setStatus(TicketStatus.RETURNED);
+        ticket.setRefundAmount(refundAmount);
+        ticket.setActualReturnTimestamp(now);
+        return ticket;
+    }
+
+    private float getRefundAmount(Ticket ticket, long hoursDifference) {
+        List<ReturnPolicy> policies = returnPolicyRepository.getAll();
+
+        float deductionPercentage = policies.stream()
+                .filter(p -> hoursDifference >= p.getHoursBeforeDeparture())
+                .findFirst()
+                .map(ReturnPolicy::getDeductionPercentage)
+                .orElse(100f);
+
+        return ticket.getTotalAmount() * (1 - (deductionPercentage / 100));
     }
 
     @Override
@@ -97,7 +142,7 @@ public class TicketService implements ITicketService {
 
     @Override
     @Transactional
-    public synchronized int updateTicketStatusAndRefund(int ticketId, String status, float refundAmount, LocalDateTime returnTime) {
+    public int updateTicketStatusAndRefund(int ticketId, String status, float refundAmount, LocalDateTime returnTime) {
         return ticketRepository.updateTicketStatusAndRefund(ticketId, status, refundAmount, returnTime);
     }
 }

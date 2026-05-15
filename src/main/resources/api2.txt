@@ -4,17 +4,6 @@ Railway Ticket Management System - API Reference (JSON Format)
 1. User Management
 ==================
 
-Register:
-  POST /api/user/register
-  {
-    "username": "arif",
-    "password": "pass123",
-    "email": "arif@mail.com",
-    "fullName": "Arif Ahmed",
-    "role": "USER"
-  }
-  Response: void
-
 Login:
   POST /api/user/login
   {

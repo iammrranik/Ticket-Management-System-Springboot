@@ -1,12 +1,18 @@
 package com.railway.ticket.management.system.domain;
 
 import com.railway.ticket.management.system.domain.enums.CoachType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class Coach {
     private int id;
+    @Positive
     private int trainId;
+    @NotNull
     private CoachType coachType;
+    @Positive
     private int capacity;
+    @Positive
     private float baseFare;
 
     public Coach(int id, int trainId, CoachType coachType, int capacity, float baseFare) {

@@ -1,6 +1,7 @@
 package com.railway.ticket.management.system.service;
 
 import com.railway.ticket.management.system.domain.FoodOrder;
+import com.railway.ticket.management.system.domain.enums.FoodOrderStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,5 +15,5 @@ public interface IFoodOrderService {
     int update(FoodOrder foodOrder);
     int deleteById(int id);
     FoodOrder placeOrder(FoodOrder foodOrder);
-    int updateOrderStatus(int orderId, String status);
+    int updateOrderStatus(int orderId, FoodOrderStatus status);
 }

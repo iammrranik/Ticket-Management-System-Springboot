@@ -1,6 +1,7 @@
 package com.railway.ticket.management.system.repository;
 
 import com.railway.ticket.management.system.domain.FoodOrder;
+import com.railway.ticket.management.system.domain.enums.FoodOrderStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,5 +14,5 @@ public interface IFoodOrderRepository {
     int count();
     int update(FoodOrder foodOrder);
     int deleteById(int id);
-    int updateFoodOrderStatus(int orderId, String status);
+    int updateFoodOrderStatus(int orderId, FoodOrderStatus status);
 }

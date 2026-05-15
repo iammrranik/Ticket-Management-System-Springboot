@@ -4,6 +4,7 @@ import com.railway.ticket.management.system.domain.FoodItem;
 import com.railway.ticket.management.system.repository.implementation.FoodItemRepository;
 import com.railway.ticket.management.system.service.IFoodItemService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class FoodItemService implements IFoodItemService {
     }
 
     @Override
+    @Transactional
     public FoodItem save(FoodItem foodItem) {
         foodItemRepository.save(foodItem);
         return foodItem;
@@ -44,11 +46,13 @@ public class FoodItemService implements IFoodItemService {
     }
 
     @Override
+    @Transactional
     public int update(FoodItem foodItem) {
         return foodItemRepository.update(foodItem);
     }
 
     @Override
+    @Transactional
     public int deleteById(int id) {
         return foodItemRepository.deleteById(id);
     }
@@ -59,7 +63,8 @@ public class FoodItemService implements IFoodItemService {
     }
 
     @Override
-    public synchronized int updateAvailableQuantity(int foodItemId, int quantity) {
+    @Transactional
+    public int updateAvailableQuantity(int foodItemId, int quantity) {
         return foodItemRepository.updateFoodItemAvailableQuantity(foodItemId, quantity);
     }
 }

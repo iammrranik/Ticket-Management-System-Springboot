@@ -68,6 +68,18 @@ public class ReturnPolicyRepository implements IReturnPolicyRepository {
     }
 
     @Override
+    public List<ReturnPolicy> getAll() {
+        String sql = """
+                SELECT *
+                FROM return_policies
+                ORDER BY hours_before_departure DESC
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        return namedParameterJdbcTemplate.query(sql, params, returnPolicyMapper);
+
+    }
+
+    @Override
     public int count() {
         String sql = """
                 SELECT COUNT(*)

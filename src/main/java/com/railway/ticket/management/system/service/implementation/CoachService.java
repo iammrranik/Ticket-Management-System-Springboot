@@ -4,6 +4,7 @@ import com.railway.ticket.management.system.domain.Coach;
 import com.railway.ticket.management.system.repository.implementation.CoachRepository;
 import com.railway.ticket.management.system.service.ICoachService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class CoachService implements ICoachService {
     }
 
     @Override
+    @Transactional
     public Coach save(Coach coach) {
         coachRepository.save(coach);
         return coach;
@@ -44,16 +46,19 @@ public class CoachService implements ICoachService {
     }
 
     @Override
+    @Transactional
     public int update(Coach coach) {
         return coachRepository.update(coach);
     }
 
     @Override
+    @Transactional
     public int deleteById(int id) {
         return coachRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public int updateCoachBaseFare(int coachId, float newFare) {
         return coachRepository.updateCoachBaseFare(coachId, newFare);
     }

@@ -1,9 +1,12 @@
 package com.railway.ticket.management.system.domain;
 
+import jakarta.validation.constraints.Positive;
+
 import java.time.LocalDateTime;
 
 public class TrainStatus {
     private int id;
+    @Positive
     private int trainId;
     private int currentStationId;
     private int nextStationId;

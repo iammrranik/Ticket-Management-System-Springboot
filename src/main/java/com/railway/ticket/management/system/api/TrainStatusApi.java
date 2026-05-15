@@ -2,10 +2,11 @@ package com.railway.ticket.management.system.api;
 
 import com.railway.ticket.management.system.domain.TrainStatus;
 import com.railway.ticket.management.system.service.implementation.TrainStatusService;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/train-status")
@@ -18,25 +19,33 @@ public class TrainStatusApi {
     }
 
     @PostMapping
-    public void save(@RequestBody TrainStatus trainStatus) {
+    public void save(@Valid @RequestBody TrainStatus trainStatus) {
         this.trainStatusService.save(trainStatus);
     }
 
     @PutMapping
-    public void update(@RequestBody TrainStatus trainStatus) {
+    public void update(@Valid @RequestBody TrainStatus trainStatus) {
         this.trainStatusService.update(trainStatus);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {this.trainStatusService.deleteById(id);}
-
-    @GetMapping("/{id}")
-    public Optional<TrainStatus> findById(@PathVariable int id) {
-        return this.trainStatusService.findById(id);
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        int result = this.trainStatusService.deleteById(id);
+        if (result > 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{page}/{size}")
-    public List<TrainStatus> findAll(@PathVariable int page, @PathVariable int size) {
+    @GetMapping("/{id}")
+    public ResponseEntity<TrainStatus> findById(@PathVariable int id) {
+        return this.trainStatusService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public List<TrainStatus> findAll(@RequestParam int page, @RequestParam int size) {
         return this.trainStatusService.findAll(page, size);
     }
 

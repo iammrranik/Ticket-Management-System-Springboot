@@ -1,15 +1,20 @@
 package com.railway.ticket.management.system.domain;
 
+import com.railway.ticket.management.system.domain.enums.FoodOrderStatus;
+import jakarta.validation.constraints.Positive;
+
 import java.time.LocalDateTime;
 
 public class FoodOrder {
     private int id;
+    @Positive
     private int ticketId;
+    @Positive
     private float totalAmount;
     private LocalDateTime orderTimestamp;
-    private String status;
+    private FoodOrderStatus status;
 
-    public FoodOrder(int id, int ticketId, float totalAmount, LocalDateTime orderTimestamp, String status) {
+    public FoodOrder(int id, int ticketId, float totalAmount, LocalDateTime orderTimestamp, FoodOrderStatus status) {
         setId(id);
         setTicketId(ticketId);
         setTotalAmount(totalAmount);
@@ -25,6 +30,6 @@ public class FoodOrder {
     public void setTotalAmount(float totalAmount) { this.totalAmount = totalAmount; }
     public LocalDateTime getOrderTimestamp() { return orderTimestamp; }
     public void setOrderTimestamp(LocalDateTime orderTimestamp) { this.orderTimestamp = orderTimestamp; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public FoodOrderStatus getStatus() { return status; }
+    public void setStatus(FoodOrderStatus status) { this.status = status; }
 }

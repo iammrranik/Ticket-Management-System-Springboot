@@ -9,6 +9,7 @@ public interface IReturnPolicyRepository {
     int save(ReturnPolicy returnPolicy);
     Optional<ReturnPolicy> findById(int id);
     List<ReturnPolicy> findAll(int page, int size);
+    List<ReturnPolicy> getAll();
     int count();
     int update(ReturnPolicy returnPolicy);
     int deleteById(int id);

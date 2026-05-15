@@ -2,6 +2,8 @@ package com.railway.ticket.management.system.api;
 
 import com.railway.ticket.management.system.domain.Station;
 import com.railway.ticket.management.system.service.implementation.StationService;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,19 +20,29 @@ public class StationApi {
     }
 
     @PostMapping
-    public void save(@RequestBody Station station) {this.stationService.save(station);}
+    public void save(@Valid @RequestBody Station station) {this.stationService.save(station);}
 
     @PutMapping
-    public void update(@RequestBody Station station) {this.stationService.update(station);}
+    public void update(@Valid @RequestBody Station station) {this.stationService.update(station);}
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {this.stationService.deleteById(id);}
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        int result = this.stationService.deleteById(id);
+        if (result > 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @GetMapping("/{id}")
-    public Optional<Station> findById(@PathVariable int id) {return this.stationService.findById(id);}
+    public ResponseEntity<Station> findById(@PathVariable int id) {
+        return this.stationService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-    @GetMapping("/{page}/{size}")
-    public List<Station> findAll(@PathVariable int page, @PathVariable int size) {
+    @GetMapping
+    public List<Station> findAll(@RequestParam int page, @RequestParam int size) {
         return this.stationService.findAll(page, size);
     }
 

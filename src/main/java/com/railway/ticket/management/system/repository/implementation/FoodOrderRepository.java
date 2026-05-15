@@ -1,6 +1,7 @@
 package com.railway.ticket.management.system.repository.implementation;
 
 import com.railway.ticket.management.system.domain.FoodOrder;
+import com.railway.ticket.management.system.domain.enums.FoodOrderStatus;
 import com.railway.ticket.management.system.repository.IFoodOrderRepository;
 import com.railway.ticket.management.system.repository.mapper.FoodOrderMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -30,7 +31,7 @@ public class FoodOrderRepository implements IFoodOrderRepository {
                 .addValue("ticket_id", foodOrder.getTicketId())
                 .addValue("total_amount", foodOrder.getTotalAmount())
                 .addValue("order_timestamp", foodOrder.getOrderTimestamp())
-                .addValue("status", foodOrder.getStatus());
+                .addValue("status", foodOrder.getStatus().name());
         return namedParameterJdbcTemplate.update(sql, params);
     }
 
@@ -105,7 +106,7 @@ public class FoodOrderRepository implements IFoodOrderRepository {
                 .addValue("ticket_id", foodOrder.getTicketId())
                 .addValue("total_amount", foodOrder.getTotalAmount())
                 .addValue("order_timestamp", foodOrder.getOrderTimestamp())
-                .addValue("status", foodOrder.getStatus())
+                .addValue("status", foodOrder.getStatus().name())
                 .addValue("id", foodOrder.getId());
         return namedParameterJdbcTemplate.update(sql, params);
     }
@@ -122,7 +123,7 @@ public class FoodOrderRepository implements IFoodOrderRepository {
     }
 
     @Override
-    public int updateFoodOrderStatus(int orderId, String status) {
+    public int updateFoodOrderStatus(int orderId, FoodOrderStatus status) {
         String sql = """
             UPDATE food_orders
             SET status = :status
@@ -130,7 +131,7 @@ public class FoodOrderRepository implements IFoodOrderRepository {
             """;
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", orderId)
-                .addValue("status", status);
+                .addValue("status", status.name());
         return namedParameterJdbcTemplate.update(sql, params);
     }
 

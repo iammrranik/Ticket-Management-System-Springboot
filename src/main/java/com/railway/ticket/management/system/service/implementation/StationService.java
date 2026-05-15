@@ -4,6 +4,7 @@ import com.railway.ticket.management.system.domain.Station;
 import com.railway.ticket.management.system.repository.implementation.StationRepository;
 import com.railway.ticket.management.system.service.IStationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class StationService implements IStationService {
     }
 
     @Override
+    @Transactional
     public Station save(Station station) {
         stationRepository.save(station);
         return station;
@@ -44,11 +46,13 @@ public class StationService implements IStationService {
     }
 
     @Override
+    @Transactional
     public int update(Station station) {
         return stationRepository.update(station);
     }
 
     @Override
+    @Transactional
     public int deleteById(int id) {
         return stationRepository.deleteById(id);
     }

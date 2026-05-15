@@ -25,7 +25,7 @@ public class TicketMapper implements RowMapper<Ticket> {
             bookingTime = bookingTimestamp.toLocalDateTime();
         }
 
-        Timestamp actualReturnTimestamp = rs.getTimestamp("actualReturnTimestamp");
+        Timestamp actualReturnTimestamp = rs.getTimestamp("actual_return_timestamp");
         LocalDateTime actualReturnTime = null;
         if(actualReturnTimestamp != null) {
             actualReturnTime =  actualReturnTimestamp.toLocalDateTime();

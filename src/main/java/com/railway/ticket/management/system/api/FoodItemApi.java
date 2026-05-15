@@ -2,10 +2,11 @@ package com.railway.ticket.management.system.api;
 
 import com.railway.ticket.management.system.domain.FoodItem;
 import com.railway.ticket.management.system.service.implementation.FoodItemService;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/food-item")
@@ -18,19 +19,29 @@ public class FoodItemApi {
     }
 
     @PostMapping
-    public void save(@RequestBody FoodItem foodItem) {this.foodItemService.save(foodItem);}
+    public void save(@Valid @RequestBody FoodItem foodItem) {this.foodItemService.save(foodItem);}
 
     @PutMapping
-    public void update(@RequestBody FoodItem foodItem) {this.foodItemService.update(foodItem);}
+    public void update(@Valid @RequestBody FoodItem foodItem) {this.foodItemService.update(foodItem);}
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {this.foodItemService.deleteById(id);}
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        int result = this.foodItemService.deleteById(id);
+        if (result > 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @GetMapping("/{id}")
-    public Optional<FoodItem> findById(@PathVariable int id) {return this.foodItemService.findById(id);}
+    public ResponseEntity<FoodItem> findById(@PathVariable int id) {
+        return this.foodItemService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-    @GetMapping("/{page}/{size}")
-    public List<FoodItem> findAll(@PathVariable int page, @PathVariable int size) {
+    @GetMapping
+    public List<FoodItem> findAll(@RequestParam int page, @RequestParam int size) {
         return this.foodItemService.findAll(page, size);
     }
 

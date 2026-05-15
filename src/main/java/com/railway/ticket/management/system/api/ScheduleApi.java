@@ -2,11 +2,12 @@ package com.railway.ticket.management.system.api;
 
 import com.railway.ticket.management.system.domain.Schedule;
 import com.railway.ticket.management.system.service.implementation.ScheduleService;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/schedule")
@@ -19,19 +20,29 @@ public class ScheduleApi {
     }
 
     @PostMapping
-    public void save(@RequestBody Schedule schedule) {this.scheduleService.save(schedule);}
+    public void save(@Valid @RequestBody Schedule schedule) {this.scheduleService.save(schedule);}
 
     @PutMapping
-    public void update(@RequestBody Schedule schedule) {this.scheduleService.update(schedule);}
+    public void update(@Valid @RequestBody Schedule schedule) {this.scheduleService.update(schedule);}
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {this.scheduleService.deleteById(id);}
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        int result = this.scheduleService.deleteById(id);
+        if (result > 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @GetMapping("/{id}")
-    public Optional<Schedule> findById(@PathVariable int id) {return this.scheduleService.findById(id);}
+    public ResponseEntity<Schedule> findById(@PathVariable int id) {
+        return this.scheduleService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-    @GetMapping("/{page}/{size}")
-    public List<Schedule> findAll(@PathVariable int page, @PathVariable int size) {
+    @GetMapping
+    public List<Schedule> findAll(@RequestParam int page, @RequestParam int size) {
         return this.scheduleService.findAll(page, size);
     }
 

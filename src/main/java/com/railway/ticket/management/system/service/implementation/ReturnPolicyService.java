@@ -4,6 +4,7 @@ import com.railway.ticket.management.system.domain.ReturnPolicy;
 import com.railway.ticket.management.system.repository.implementation.ReturnPolicyRepository;
 import com.railway.ticket.management.system.service.IReturnPolicyService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class ReturnPolicyService implements IReturnPolicyService {
     }
 
     @Override
+    @Transactional
     public ReturnPolicy save(ReturnPolicy returnPolicy) {
         returnPolicyRepository.save(returnPolicy);
         return returnPolicy;
@@ -39,11 +41,13 @@ public class ReturnPolicyService implements IReturnPolicyService {
     }
 
     @Override
+    @Transactional
     public int update(ReturnPolicy returnPolicy) {
         return returnPolicyRepository.update(returnPolicy);
     }
 
     @Override
+    @Transactional
     public int deleteById(int id) {
         return returnPolicyRepository.deleteById(id);
     }

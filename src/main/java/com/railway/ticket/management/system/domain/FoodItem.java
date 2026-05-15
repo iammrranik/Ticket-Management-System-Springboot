@@ -1,10 +1,17 @@
 package com.railway.ticket.management.system.domain;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 public class FoodItem {
     private int id;
+    @NotBlank
     private String itemName;
+    @NotBlank
     private String category;
+    @Positive
     private float price;
+    @Positive
     private int availableQuantity;
 
     public FoodItem(int id, String itemName, String category, float price, int availableQuantity) {

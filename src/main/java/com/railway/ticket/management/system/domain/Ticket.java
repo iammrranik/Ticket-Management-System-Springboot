@@ -1,13 +1,19 @@
 package com.railway.ticket.management.system.domain;
 
 import com.railway.ticket.management.system.domain.enums.TicketStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 public class Ticket {
     private int id;
+    @Positive
     private int userId;
+    @Positive
     private int scheduleId;
+    @Positive
     private int coachId;
+    @NotBlank
     private String seatNumber;
     private LocalDateTime bookingTime;
     private float totalAmount;

@@ -1,8 +1,12 @@
 package com.railway.ticket.management.system.domain;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class Train {
     private int id;
+    @NotBlank
     private String trainRegistrationNumber;
+    @NotBlank
     private String trainName;
     private int totalCoaches;
     private int totalAcCoaches;

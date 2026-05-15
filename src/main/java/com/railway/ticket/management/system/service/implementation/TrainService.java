@@ -4,6 +4,7 @@ import com.railway.ticket.management.system.domain.Train;
 import com.railway.ticket.management.system.repository.implementation.TrainRepository;
 import com.railway.ticket.management.system.service.ITrainService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class TrainService implements ITrainService {
     }
 
     @Override
+    @Transactional
     public Train save(Train train) {
         trainRepository.save(train);
         return train;
@@ -44,11 +46,13 @@ public class TrainService implements ITrainService {
     }
 
     @Override
+    @Transactional
     public int update(Train train) {
         return trainRepository.update(train);
     }
 
     @Override
+    @Transactional
     public int deleteById(int id) {
         return trainRepository.deleteById(id);
     }

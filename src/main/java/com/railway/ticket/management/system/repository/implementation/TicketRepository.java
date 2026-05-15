@@ -159,12 +159,14 @@ public class TicketRepository implements ITicketRepository {
         return namedParameterJdbcTemplate.update(sql, params);
     }
 
+    @Override
     public boolean isSeatAvailable(int scheduleId, int coachId, String seatNumber) {
         String sql = """
                 SELECT (c.capacity - COUNT(t.id)) as available_seats
                 FROM coaches c
                 LEFT JOIN tickets t ON c.id = t.coach_id
                     AND t.schedule_id = :scheduleId
+                    AND t.seat_number = :seatNumber
                     AND t.status IN ('BOOKED', 'CONFIRMED', 'PENDING')
                 WHERE c.id = :coachId;
             """;

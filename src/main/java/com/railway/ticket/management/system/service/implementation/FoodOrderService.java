@@ -3,11 +3,11 @@ package com.railway.ticket.management.system.service.implementation;
 import com.railway.ticket.management.system.domain.FoodItem;
 import com.railway.ticket.management.system.domain.FoodOrder;
 import com.railway.ticket.management.system.domain.FoodOrderDetails;
+import com.railway.ticket.management.system.domain.enums.FoodOrderStatus;
 import com.railway.ticket.management.system.repository.implementation.FoodItemRepository;
 import com.railway.ticket.management.system.repository.implementation.FoodOrderDetailsRepository;
 import com.railway.ticket.management.system.repository.implementation.FoodOrderRepository;
 import com.railway.ticket.management.system.service.IFoodOrderService;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +31,7 @@ public class FoodOrderService implements IFoodOrderService {
     }
 
     @Override
+    @Transactional
     public FoodOrder save(FoodOrder foodOrder) {
         foodOrderRepository.save(foodOrder);
         return foodOrder;
@@ -57,38 +58,53 @@ public class FoodOrderService implements IFoodOrderService {
     }
 
     @Override
+    @Transactional
     public int update(FoodOrder foodOrder) {
         return foodOrderRepository.update(foodOrder);
     }
 
     @Override
+    @Transactional
     public int deleteById(int id) {
         return foodOrderRepository.deleteById(id);
     }
 
     @Override
-    @Async
     @Transactional
-    public synchronized FoodOrder placeOrder(FoodOrder foodOrder) {
+    public FoodOrder placeOrder(FoodOrder foodOrder) {
+        if (foodOrder.getId() == 0) {
+            foodOrderRepository.save(foodOrder);
+        }
+
         List<FoodOrderDetails> detailsList = foodOrderDetailsRepository.findByOrderId(foodOrder.getId());
 
-        for (FoodOrderDetails detail : detailsList) {
-            Optional<FoodItem> foodItemOpt = foodItemRepository.findById(detail.getFoodItemId());
-            if (foodItemOpt.isPresent()) {
-                FoodItem foodItem = foodItemOpt.get();
-                int newQuantity = foodItem.getAvailableQuantity() - detail.getQuantity();
-                foodItemRepository.updateFoodItemAvailableQuantity(detail.getFoodItemId(), newQuantity);
+        for (FoodOrderDetails details : detailsList) {
+            Optional<FoodItem> foodItemOpt = foodItemRepository.findById(details.getFoodItemId());
+            if (foodItemOpt.isEmpty() || foodItemOpt.get().getAvailableQuantity() < details.getQuantity()) {
+                foodOrder.setStatus(FoodOrderStatus.FAILED);
+                foodOrder.setOrderTimestamp(LocalDateTime.now());
+                foodOrderRepository.save(foodOrder);
+                return foodOrder;
             }
         }
 
-        foodOrder.setStatus("PLACED");
+        for (FoodOrderDetails details : detailsList) {
+            int updated = foodItemRepository.deductFoodItemQuantity(details.getFoodItemId(), details.getQuantity());
+            if (updated == 0) {
+                throw new RuntimeException("Stock insufficient for Item ID: " + details.getFoodItemId());
+            }
+        }
+
+        foodOrder.setStatus(FoodOrderStatus.PLACED);
         foodOrder.setOrderTimestamp(LocalDateTime.now());
         foodOrderRepository.save(foodOrder);
         return foodOrder;
     }
 
+
     @Override
-    public int updateOrderStatus(int orderId, String status) {
+    public int updateOrderStatus(int orderId, FoodOrderStatus status) {
         return foodOrderRepository.updateFoodOrderStatus(orderId, status);
     }
 }
+
