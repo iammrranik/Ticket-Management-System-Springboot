@@ -20,13 +20,20 @@ public class TrainApi {
     }
 
     @PostMapping
-    public void save(@Valid @RequestBody Train train) {this.trainService.save(train);}
+    public void save(@Valid @RequestBody Train train) {
+        System.out.println("POST /api/train - " + train.getTrainName());
+        this.trainService.save(train);
+    }
 
     @PutMapping
-    public void update(@Valid @RequestBody Train train) {this.trainService.update(train);}
+    public void update(@Valid @RequestBody Train train) {
+        System.out.println("PUT /api/train - id=" + train.getId());
+        this.trainService.update(train);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
+        System.out.println("DELETE /api/train/" + id);
         int result = this.trainService.deleteById(id);
         if (result > 0) {
             return ResponseEntity.noContent().build();
@@ -36,6 +43,7 @@ public class TrainApi {
 
     @GetMapping("/{id}")
     public ResponseEntity<Train> findById(@PathVariable int id) {
+        System.out.println("GET /api/train/" + id);
         return this.trainService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -43,11 +51,13 @@ public class TrainApi {
 
     @GetMapping
     public List<Train> findAll(@RequestParam int page, @RequestParam int size) {
+        System.out.println("GET /api/train?page=" + page + "&size=" + size);
         return this.trainService.findAll(page, size);
     }
 
     @GetMapping("/number/{regNumber}")
     public Optional<Train> findByRegNumber(@PathVariable String regNumber) {
+        System.out.println("GET /api/train/number/" + regNumber);
         return this.trainService.findByTrainRegistrationNumber(regNumber);
     }
 }

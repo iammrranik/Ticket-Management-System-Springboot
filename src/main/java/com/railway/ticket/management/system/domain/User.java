@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 public class User {
-    private int id;
+    private Integer id;
     @NotBlank
     private String username;
     @NotBlank
@@ -28,8 +28,8 @@ public class User {
         setCreatedAt(createdAt);
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
     public String getPassword() { return password; }

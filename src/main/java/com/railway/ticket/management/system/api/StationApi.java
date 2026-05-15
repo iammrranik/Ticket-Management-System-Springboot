@@ -20,13 +20,20 @@ public class StationApi {
     }
 
     @PostMapping
-    public void save(@Valid @RequestBody Station station) {this.stationService.save(station);}
+    public void save(@Valid @RequestBody Station station) {
+        System.out.println("POST /api/station - " + station.getStationName());
+        this.stationService.save(station);
+    }
 
     @PutMapping
-    public void update(@Valid @RequestBody Station station) {this.stationService.update(station);}
+    public void update(@Valid @RequestBody Station station) {
+        System.out.println("PUT /api/station - id=" + station.getId());
+        this.stationService.update(station);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
+        System.out.println("DELETE /api/station/" + id);
         int result = this.stationService.deleteById(id);
         if (result > 0) {
             return ResponseEntity.noContent().build();
@@ -36,6 +43,7 @@ public class StationApi {
 
     @GetMapping("/{id}")
     public ResponseEntity<Station> findById(@PathVariable int id) {
+        System.out.println("GET /api/station/" + id);
         return this.stationService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -43,11 +51,13 @@ public class StationApi {
 
     @GetMapping
     public List<Station> findAll(@RequestParam int page, @RequestParam int size) {
+        System.out.println("GET /api/station?page=" + page + "&size=" + size);
         return this.stationService.findAll(page, size);
     }
 
     @GetMapping("/code/{code}")
     public Optional<Station> findByCode(@PathVariable String code) {
+        System.out.println("GET /api/station/code/" + code);
         return this.stationService.findByStationCode(code);
     }
 }

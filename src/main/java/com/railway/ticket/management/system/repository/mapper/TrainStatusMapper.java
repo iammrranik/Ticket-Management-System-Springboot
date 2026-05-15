@@ -1,6 +1,7 @@
 package com.railway.ticket.management.system.repository.mapper;
 
 import com.railway.ticket.management.system.domain.TrainStatus;
+import com.railway.ticket.management.system.domain.enums.TrainStatusEnum;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -20,7 +21,7 @@ public class TrainStatusMapper implements RowMapper<TrainStatus> {
                 rs.getInt("train_id"),
                 rs.getInt("current_station_id"),
                 rs.getInt("next_station_id"),
-                rs.getString("status"),
+                TrainStatusEnum.valueOf(rs.getString("status")),
                 lastUpdated
         );
     }

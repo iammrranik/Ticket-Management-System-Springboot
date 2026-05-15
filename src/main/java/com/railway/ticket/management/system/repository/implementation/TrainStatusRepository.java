@@ -1,6 +1,7 @@
 package com.railway.ticket.management.system.repository.implementation;
 
 import com.railway.ticket.management.system.domain.TrainStatus;
+import com.railway.ticket.management.system.domain.enums.TrainStatusEnum;
 import com.railway.ticket.management.system.repository.ITrainStatusRepository;
 import com.railway.ticket.management.system.repository.mapper.TrainStatusMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -31,7 +32,7 @@ public class TrainStatusRepository implements ITrainStatusRepository {
                 .addValue("train_id", trainStatus.getTrainId())
                 .addValue("current_station_id", trainStatus.getCurrentStationId())
                 .addValue("next_station_id", trainStatus.getNextStationId())
-                .addValue("status", trainStatus.getStatus())
+                .addValue("status", trainStatus.getStatus().name())
                 .addValue("last_updated", trainStatus.getLastUpdated());
         return namedParameterJdbcTemplate.update(sql, params);
     }
@@ -107,7 +108,7 @@ public class TrainStatusRepository implements ITrainStatusRepository {
                 .addValue("train_id", trainStatus.getTrainId())
                 .addValue("current_station_id", trainStatus.getCurrentStationId())
                 .addValue("next_station_id", trainStatus.getNextStationId())
-                .addValue("status", trainStatus.getStatus())
+                .addValue("status", trainStatus.getStatus().name())
                 .addValue("last_updated", trainStatus.getLastUpdated())
                 .addValue("id", trainStatus.getId());
         return namedParameterJdbcTemplate.update(sql, params);
@@ -125,7 +126,7 @@ public class TrainStatusRepository implements ITrainStatusRepository {
     }
 
     @Override
-    public int updateTrainLocation(int trainId, int currentStationId, int nextStationId, String status) {
+    public int updateTrainLocation(int trainId, int currentStationId, int nextStationId, TrainStatusEnum status) {
         String sql = """
             UPDATE train_status
             SET current_station_id = :current_station_id,
@@ -138,7 +139,7 @@ public class TrainStatusRepository implements ITrainStatusRepository {
                 .addValue("train_id", trainId)
                 .addValue("current_station_id", currentStationId)
                 .addValue("next_station_id", nextStationId)
-                .addValue("status", status)
+                .addValue("status", status.name())
                 .addValue("last_updated", LocalDateTime.now());
         return namedParameterJdbcTemplate.update(sql, params);
     }

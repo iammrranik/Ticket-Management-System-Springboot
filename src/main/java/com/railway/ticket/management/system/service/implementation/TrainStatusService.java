@@ -1,6 +1,7 @@
 package com.railway.ticket.management.system.service.implementation;
 
 import com.railway.ticket.management.system.domain.TrainStatus;
+import com.railway.ticket.management.system.domain.enums.TrainStatusEnum;
 import com.railway.ticket.management.system.repository.implementation.TrainStatusRepository;
 import com.railway.ticket.management.system.service.ITrainStatusService;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class TrainStatusService implements ITrainStatusService {
 
     @Override
     @Transactional
-    public int updateTrainLocation(int trainId, int currentStationId, int nextStationId, String status) {
+    public int updateTrainLocation(int trainId, int currentStationId, int nextStationId, TrainStatusEnum status) {
         return trainStatusRepository.updateTrainLocation(trainId, currentStationId, nextStationId, status);
     }
 }

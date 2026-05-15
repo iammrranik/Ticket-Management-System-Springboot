@@ -1,0 +1,475 @@
+================================================================================
+  RAILWAY TICKET MANAGEMENT SYSTEM — API PROCEDURE (api3.txt)
+  Sample Users: anik (ADMIN) / anika (USER)
+  Database: railwaydb (see db.sql for schema + sample data)
+================================================================================
+
+========================================
+PART A: PUBLIC ENDPOINTS (No Token)
+================================--------
+
+  A1. REGISTER a new user (anik = ADMIN, anika = USER)
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/user
+  Content-Type: application/json
+
+  → anik (ADMIN):
+  {
+    "id": 0,
+    "username": "anik",
+    "password": "anik123",
+    "email": "anik@railway.com",
+    "fullName": "Anik Admin",
+    "role": "ADMIN"
+  }
+
+  → anika (USER):
+  {
+    "id": 0,
+    "username": "anika",
+    "password": "anika123",
+    "email": "anika@example.com",
+    "fullName": "Anika User",
+    "role": "USER"
+  }
+
+  A2. LOGIN (get JWT token)
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/user/login
+  Content-Type: application/json
+
+  → anik:
+  { "username": "anik", "password": "anik123" }
+
+  Response (save this token for ADMIN operations):
+  {
+    "token": "eyJhbGci...",
+    "id": 1,
+    "username": "anik",
+    "email": "anik@railway.com",
+    "fullName": "Anik Admin",
+    "role": "ADMIN",
+    "createdAt": "2026-05-15T12:00:00"
+  }
+
+  → anika:
+  { "username": "anika", "password": "anika123" }
+
+  Response (save this token for USER operations):
+  {
+    "token": "eyJhbGci...",
+    "id": 2,
+    "username": "anika",
+    "email": "anika@example.com",
+    "fullName": "Anika User",
+    "role": "USER",
+    "createdAt": "2026-05-15T12:00:00"
+  }
+
+========================================
+PART B: USER OPERATIONS (anika's Token)
+========================================
+  Use Authorization: Bearer <anika_token> for all requests below.
+
+  B1. View all stations
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/station?page=1&size=10
+
+  B2. View all trains
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/train?page=1&size=10
+
+  B3. View all schedules
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/schedule?page=1&size=10
+
+  B4. Find schedules by source station (Dhaka = id 1)
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/schedule/source/1
+
+  B5. Find schedules by destination (Chittagong = id 2)
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/schedule/destination/2
+
+  B6. View coaches for Subarna Express (train id = 1)
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/coach/train/1
+
+  B7. Check seat availability (schedule 1, coach 1, seat A1)
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/ticket/check-seat/1/1/A1
+
+  B8. Book a ticket
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/ticket/book
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "userId": 2,
+    "scheduleId": 1,
+    "coachId": 1,
+    "seatNumber": "A1",
+    "bookingTime": "2026-05-15T14:00:00",
+    "totalAmount": 1200.0,
+    "status": "BOOKED"
+  }
+
+  Response: Returns the booked Ticket with generated id.
+
+  B9. View all food items
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/food-item?page=1&size=10
+
+  B10. Check food availability (Chicken Biryani, id=1, qty=2)
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/food-item/check-availability/1/2
+
+  B11. Place a food order for ticket id 1
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/food-order/place
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "ticketId": 1,
+    "totalAmount": 270.0,
+    "orderTimestamp": "2026-05-15T14:30:00",
+    "status": "PLACED"
+  }
+
+  B12. Return a ticket (id = 1)
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/ticket/return/1
+
+  Response: Returns the Ticket with refund_amount calculated per ReturnPolicy.
+
+  B13. View return policies
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/return-policy?page=1&size=10
+
+  B14. View train status for Subarna Express (train id 1)
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/train-status/train/1
+
+========================================
+PART C: ADMIN OPERATIONS (anik's Token)
+========================================
+  Use Authorization: Bearer <anik_token> for all requests below.
+
+  -- C1. TRAIN CRUD --
+  C1a. Add a new train
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/train
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "trainRegistrationNumber": "TRAIN-003",
+    "trainName": "Mohanagar Express",
+    "totalCoaches": 10,
+    "totalAcCoaches": 3,
+    "totalNonAcCoaches": 5,
+    "totalCompartmentCoaches": 2
+  }
+
+  C1b. Update a train (id = 1)
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/train
+  Content-Type: application/json
+
+  {
+    "id": 1,
+    "trainRegistrationNumber": "TRAIN-001",
+    "trainName": "Subarna Express (Updated)",
+    "totalCoaches": 14,
+    "totalAcCoaches": 5,
+    "totalNonAcCoaches": 7,
+    "totalCompartmentCoaches": 2
+  }
+
+  C1c. Find train by registration number
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/train/number/TRAIN-001
+
+  C1d. Delete a train (id = 3)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/train/3
+
+  -- C2. STATION CRUD --
+  C2a. Add a new station
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/station
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "stationCode": "KHL",
+    "stationName": "Khulna Railway Station",
+    "city": "Khulna"
+  }
+
+  C2b. Update a station (id = 1)
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/station
+  Content-Type: application/json
+
+  {
+    "id": 1,
+    "stationCode": "DHK",
+    "stationName": "Dhaka Railway Station",
+    "city": "Dhaka"
+  }
+
+  C2c. Find station by code
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/station/code/DHK
+
+  C2d. Delete a station (id = 5)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/station/5
+
+  -- C3. COACH CRUD --
+  C3a. Add a coach to Subarna Express (train id = 1)
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/coach
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "trainId": 1,
+    "coachType": "AC_BERTH",
+    "capacity": 20,
+    "baseFare": 1500.0
+  }
+
+  C3b. Update coach base fare (coach id = 1, new fare = 1300)
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/coach/fare/1/1300.0
+
+  C3c. Delete a coach (id = 6)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/coach/6
+
+  -- C4. SCHEDULE CRUD --
+  C4a. Add a schedule
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/schedule
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "trainId": 1,
+    "sourceStationId": 1,
+    "destinationStationId": 3,
+    "departureTime": "2026-06-01T08:00:00",
+    "arrivalTime": "2026-06-01T14:30:00"
+  }
+
+  C4b. Update schedule time (schedule id = 1)
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/schedule/time
+  Content-Type: application/json
+
+  {
+    "scheduleId": 1,
+    "departure": "2026-05-20T07:00:00",
+    "arrival": "2026-05-20T13:00:00"
+  }
+
+  C4c. Delete a schedule (id = 4)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/schedule/4
+
+  -- C5. FOOD ITEM CRUD --
+  C5a. Add a food item
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/food-item
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "itemName": "Sandwich",
+    "category": "Snack",
+    "price": 80.0,
+    "availableQuantity": 50
+  }
+
+  C5b. Update food item quantity (id = 1, new qty = 60)
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/food-item/quantity/1/60
+
+  C5c. Find food items by category
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/food-item/category/Beverage
+
+  C5d. Delete a food item (id = 6)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/food-item/6
+
+  -- C6. FOOD ORDER CRUD --
+  C6a. Update food order status (order id = 1, status = DELIVERED)
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/food-order/status/1/DELIVERED
+
+  C6b. Delete a food order (id = 2)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/food-order/2
+
+  -- C7. FOOD ORDER DETAILS CRUD --
+  C7a. Add food order details
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/food-order-detail
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "orderId": 1,
+    "foodItemId": 1,
+    "quantity": 2,
+    "subTotal": 500.0
+  }
+
+  C7b. View details for order id 1
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/food-order-detail/order/1
+
+  C7c. Delete food order detail (id = 1)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/food-order-detail/1
+
+  -- C8. RETURN POLICY CRUD --
+  C8a. Add a return policy
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/return-policy
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "policyName": "Emergency Return",
+    "hoursBeforeDeparture": 2,
+    "deductionPercentage": 50.0
+  }
+
+  C8b. Delete a return policy (id = 3)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/return-policy/3
+
+  -- C9. TRAIN STATUS CRUD --
+  C9a. Set train status
+  ─────────────────────────────────────────────────────
+  POST http://localhost:8080/api/train-status
+  Content-Type: application/json
+
+  {
+    "id": 0,
+    "trainId": 1,
+    "currentStationId": 2,
+    "nextStationId": 1,
+    "status": "ON_TIME",
+    "lastUpdated": "2026-05-20T13:00:00"
+  }
+
+  C9b. Update train location (train id = 1)
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/train-status/location/1/1/2/DELAYED
+
+  C9c. Delete a train status entry (id = 1)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/train-status/1
+
+  -- C10. TICKET CRUD (ADMIN) --
+  C10a. Update a ticket
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/ticket
+  Content-Type: application/json
+
+  {
+    "id": 1,
+    "userId": 2,
+    "scheduleId": 1,
+    "coachId": 1,
+    "seatNumber": "A1",
+    "bookingTime": "2026-05-15T14:00:00",
+    "totalAmount": 1200.0,
+    "status": "CONFIRMED"
+  }
+
+  C10b. Delete a ticket (id = 2)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/ticket/2
+
+  -- C11. USER CRUD (ADMIN) --
+  C11a. List all users
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/user?page=1&size=10
+
+  C11b. Find user by id
+  ─────────────────────────────────────────────────────
+  GET http://localhost:8080/api/user/1
+
+  C11c. Update a user
+  ─────────────────────────────────────────────────────
+  PUT http://localhost:8080/api/user
+  Content-Type: application/json
+
+  {
+    "id": 2,
+    "username": "anika",
+    "password": "anika123",
+    "email": "anika.new@example.com",
+    "fullName": "Anika User",
+    "role": "USER"
+  }
+
+  C11d. Delete a user (id = 4)
+  ─────────────────────────────────────────────────────
+  DELETE http://localhost:8080/api/user/4
+
+========================================
+PART D: ENDPOINT SUMMARY BY ROLE
+========================================
+
+  PUBLIC (no token required):
+    POST /api/user               Register new user
+    POST /api/user/login         Login, returns JWT
+
+  USER (anika) — any authenticated user can:
+    GET  /api/**                 All read/list/find endpoints
+    POST /api/ticket/book        Book a ticket
+    POST /api/ticket/return/{id} Return a ticket
+    POST /api/food-order/place   Place a food order
+
+  ADMIN (anik) — hasRole ADMIN:
+    POST/PUT/DELETE /api/user/**         User CRUD
+    POST/PUT/DELETE /api/train/**        Train CRUD
+    POST/PUT/DELETE /api/coach/**        Coach CRUD
+    POST/PUT/DELETE /api/station/**      Station CRUD
+    POST/PUT/DELETE /api/schedule/**     Schedule CRUD
+    POST/PUT/DELETE /api/food-item/**    FoodItem CRUD
+    POST/PUT/DELETE /api/food-order/**   FoodOrder CRUD
+    POST/PUT/DELETE /api/food-order-detail/** FoodOrderDetails CRUD
+    POST/PUT/DELETE /api/return-policy/** ReturnPolicy CRUD
+    POST/PUT/DELETE /api/train-status/** TrainStatus CRUD
+    POST/PUT/DELETE /api/ticket/**       Ticket CRUD
+    PUT  /api/coach/fare/{id}/{fare}     Update coach fare
+    PUT  /api/food-item/quantity/{id}/{qty} Update stock
+    PUT  /api/food-order/status/{id}/{status} Update order status
+    PUT  /api/schedule/time              Update schedule time
+    PUT  /api/train-status/location/{...} Update train location
+
+========================================
+PART E: COMPLETE SAMPLE FLOW (10 steps)
+========================================
+
+  Step 1: Register anika (USER) — POST /api/user
+  Step 2: Login as anika — POST /api/user/login → get token
+  Step 3: Browse stations — GET /api/station?page=1&size=10
+  Step 4: Browse trains — GET /api/train?page=1&size=10
+  Step 5: Check seat availability — GET /api/ticket/check-seat/1/1/A1
+  Step 6: Book ticket — POST /api/ticket/book
+  Step 7: Browse food — GET /api/food-item?page=1&size=10
+  Step 8: Place food order — POST /api/food-order/place
+  Step 9: Return ticket — POST /api/ticket/return/1
+  Step 10: Login as anik (ADMIN) — POST /api/user/login → get admin token,
+           manage entities (see Part C)

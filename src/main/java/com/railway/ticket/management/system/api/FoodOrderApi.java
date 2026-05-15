@@ -20,13 +20,20 @@ public class FoodOrderApi {
     }
 
     @PostMapping
-    public void save(@Valid @RequestBody FoodOrder foodOrder) {this.foodOrderService.save(foodOrder);}
+    public void save(@Valid @RequestBody FoodOrder foodOrder) {
+        System.out.println("POST /api/food-order - ticketId=" + foodOrder.getTicketId());
+        this.foodOrderService.save(foodOrder);
+    }
 
     @PutMapping
-    public void update(@Valid @RequestBody FoodOrder foodOrder) {this.foodOrderService.update(foodOrder);}
+    public void update(@Valid @RequestBody FoodOrder foodOrder) {
+        System.out.println("PUT /api/food-order - id=" + foodOrder.getId());
+        this.foodOrderService.update(foodOrder);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
+        System.out.println("DELETE /api/food-order/" + id);
         int result = this.foodOrderService.deleteById(id);
         if (result > 0) {
             return ResponseEntity.noContent().build();
@@ -36,6 +43,7 @@ public class FoodOrderApi {
 
     @GetMapping("/{id}")
     public ResponseEntity<FoodOrder> findById(@PathVariable int id) {
+        System.out.println("GET /api/food-order/" + id);
         return this.foodOrderService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -43,21 +51,25 @@ public class FoodOrderApi {
 
     @GetMapping
     public List<FoodOrder> findAll(@RequestParam int page, @RequestParam int size) {
+        System.out.println("GET /api/food-order?page=" + page + "&size=" + size);
         return this.foodOrderService.findAll(page, size);
     }
 
     @GetMapping("/ticket/{ticketId}")
     public List<FoodOrder> findByTicketId(@PathVariable int ticketId) {
+        System.out.println("GET /api/food-order/ticket/" + ticketId);
         return this.foodOrderService.findByTicketId(ticketId);
     }
 
     @PostMapping("/place")
     public FoodOrder placeOrder(@Valid @RequestBody FoodOrder foodOrder) {
+        System.out.println("POST /api/food-order/place - ticketId=" + foodOrder.getTicketId());
         return this.foodOrderService.placeOrder(foodOrder);
     }
 
     @PutMapping("/status/{orderId}/{status}")
     public void updateStatus(@PathVariable int orderId, @PathVariable FoodOrderStatus status) {
+        System.out.println("PUT /api/food-order/status/" + orderId + "/" + status);
         this.foodOrderService.updateOrderStatus(orderId, status);
     }
 }

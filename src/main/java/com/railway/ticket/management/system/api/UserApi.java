@@ -24,13 +24,20 @@ public class UserApi {
     }
 
     @PostMapping
-    public void save(@Valid @RequestBody User user) {this.userService.save(user);}
+    public void save(@Valid @RequestBody User user) {
+        System.out.println("POST /api/user - Register: " + user.getUsername());
+        this.userService.save(user);
+    }
 
     @PutMapping
-    public void update(@Valid @RequestBody User user) {this.userService.update(user);}
+    public void update(@Valid @RequestBody User user) {
+        System.out.println("PUT /api/user - Update user id=" + user.getId());
+        this.userService.update(user);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
+        System.out.println("DELETE /api/user/" + id);
         int result = this.userService.deleteById(id);
         if (result > 0) {
             return ResponseEntity.noContent().build();
@@ -40,6 +47,7 @@ public class UserApi {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> findById(@PathVariable int id) {
+        System.out.println("GET /api/user/" + id);
         return this.userService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -47,6 +55,7 @@ public class UserApi {
 
     @GetMapping
     public List<User> findAll(@RequestParam int page, @RequestParam int size) {
+        System.out.println("GET /api/user?page=" + page + "&size=" + size);
         return this.userService.findAll(page, size);
     }
 

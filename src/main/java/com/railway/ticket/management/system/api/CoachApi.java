@@ -19,13 +19,20 @@ public class CoachApi {
     }
 
     @PostMapping
-    public void save(@Valid @RequestBody Coach coach) {this.coachService.save(coach);}
+    public void save(@Valid @RequestBody Coach coach) {
+        System.out.println("POST /api/coach - trainId=" + coach.getTrainId() + " type=" + coach.getCoachType());
+        this.coachService.save(coach);
+    }
 
     @PutMapping
-    public void update(@Valid @RequestBody Coach coach) {this.coachService.update(coach);}
+    public void update(@Valid @RequestBody Coach coach) {
+        System.out.println("PUT /api/coach - id=" + coach.getId());
+        this.coachService.update(coach);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
+        System.out.println("DELETE /api/coach/" + id);
         int result = this.coachService.deleteById(id);
         if (result > 0) {
             return ResponseEntity.noContent().build();
@@ -35,6 +42,7 @@ public class CoachApi {
 
     @GetMapping("/{id}")
     public ResponseEntity<Coach> findById(@PathVariable int id) {
+        System.out.println("GET /api/coach/" + id);
         return this.coachService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -42,16 +50,19 @@ public class CoachApi {
 
     @GetMapping
     public List<Coach> findAll(@RequestParam int page, @RequestParam int size) {
+        System.out.println("GET /api/coach?page=" + page + "&size=" + size);
         return this.coachService.findAll(page, size);
     }
 
     @GetMapping("/train/{trainId}")
     public List<Coach> findByTrainId(@PathVariable int trainId) {
+        System.out.println("GET /api/coach/train/" + trainId);
         return this.coachService.findByTrainId(trainId);
     }
 
     @PutMapping("/fare/{coachId}/{newFare}")
     public void updateFare(@PathVariable int coachId, @PathVariable float newFare) {
+        System.out.println("PUT /api/coach/fare/" + coachId + "/" + newFare);
         this.coachService.updateCoachBaseFare(coachId, newFare);
     }
 }

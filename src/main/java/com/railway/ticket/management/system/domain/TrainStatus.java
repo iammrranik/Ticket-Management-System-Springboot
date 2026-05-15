@@ -1,5 +1,7 @@
 package com.railway.ticket.management.system.domain;
 
+import com.railway.ticket.management.system.domain.enums.TrainStatusEnum;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
@@ -10,10 +12,11 @@ public class TrainStatus {
     private int trainId;
     private int currentStationId;
     private int nextStationId;
-    private String status;
+    @NotNull
+    private TrainStatusEnum status;
     private LocalDateTime lastUpdated;
 
-    public TrainStatus(int id, int trainId, int currentStationId, int nextStationId, String status, LocalDateTime lastUpdated) {
+    public TrainStatus(int id, int trainId, int currentStationId, int nextStationId, TrainStatusEnum status, LocalDateTime lastUpdated) {
         setId(id);
         setTrainId(trainId);
         setCurrentStationId(currentStationId);
@@ -30,8 +33,8 @@ public class TrainStatus {
     public void setCurrentStationId(int currentStationId) { this.currentStationId = currentStationId; }
     public int getNextStationId() { return nextStationId; }
     public void setNextStationId(int nextStationId) { this.nextStationId = nextStationId; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public TrainStatusEnum getStatus() { return status; }
+    public void setStatus(TrainStatusEnum status) { this.status = status; }
     public LocalDateTime getLastUpdated() { return lastUpdated; }
     public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
 }

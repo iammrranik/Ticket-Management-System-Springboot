@@ -1,6 +1,12 @@
 Railway Ticket Management System - API Reference (JSON Format)
 ===============================================================
 
+Authentication:
+  All endpoints except Login and Register require header:
+    Authorization: Bearer {token}
+
+  Get token from Login response.
+
 1. User Management
 ==================
 
@@ -10,9 +16,10 @@ Login:
     "username": "arif",
     "password": "pass123"
   }
-  Response: { "id": 1, "username": "arif", "fullName": "Arif Ahmed", "role": "USER" }
+  Response: { "token": "eyJ...", "id": 1, "username": "arif",
+              "fullName": "Arif Ahmed", "role": "USER" }
 
-Save:
+Register:
   POST /api/user
   {
     "username": "arif",
@@ -28,7 +35,6 @@ Update:
   {
     "id": 1,
     "username": "arif",
-    "password": "newpass",
     "email": "arif@mail.com",
     "fullName": "Arif Rahman",
     "role": "USER"
@@ -36,9 +42,10 @@ Update:
   Response: void
 
 Get:  GET /api/user/1
-  Response: { "id": 1, "username": "arif", "email": "arif@mail.com", "fullName": "Arif Ahmed", "role": "USER" }
+  Response: { "id": 1, "username": "arif", "email": "arif@mail.com",
+              "fullName": "Arif Ahmed", "role": "USER" }
 
-List: GET /api/user/1/10
+List: GET /api/user?page=1&size=10
   Response: [ { "id": 1, ... }, { "id": 2, ... } ]
 
 Delete: DELETE /api/user/1  Response: void
@@ -51,7 +58,7 @@ Save:
   POST /api/train
   {
     "trainRegistrationNumber": "TRAIN-001",
-    "name": "Subarna Express",
+    "trainName": "Subarna Express",
     "totalCoaches": 12,
     "totalAcCoaches": 4,
     "totalNonAcCoaches": 6,
@@ -63,7 +70,7 @@ Update:
   {
     "id": 1,
     "trainRegistrationNumber": "TRAIN-001",
-    "name": "Subarna Express v2",
+    "trainName": "Subarna Express v2",
     "totalCoaches": 10,
     "totalAcCoaches": 3,
     "totalNonAcCoaches": 5,
@@ -71,7 +78,7 @@ Update:
   }
 
 Get:     GET /api/train/1
-List:    GET /api/train/1/10
+List:    GET /api/train?page=1&size=10
 Delete:  DELETE /api/train/1
 Find:    GET /api/train/number/TRAIN-001
 
@@ -99,7 +106,7 @@ Update:
   }
 
 Get:        GET /api/coach/1
-List:       GET /api/coach/1/10
+List:       GET /api/coach?page=1&size=10
 Delete:     DELETE /api/coach/1
 Find/Train: GET /api/coach/train/1
 Fare:       PUT /api/coach/fare/1/1000
@@ -126,7 +133,7 @@ Update:
   }
 
 Get:      GET /api/station/1
-List:     GET /api/station/1/10
+List:     GET /api/station?page=1&size=10
 Delete:   DELETE /api/station/1
 FindCode: GET /api/station/code/DHK
 
@@ -146,13 +153,15 @@ Save:
 
 Update:
   PUT /api/schedule
-  { "id": 1, "trainId": 1, "sourceStationId": 1,
+  {
+    "id": 1, "trainId": 1, "sourceStationId": 1,
     "destinationStationId": 2,
     "departureTime": "2026-05-20T07:00:00",
-    "arrivalTime": "2026-05-20T13:00:00" }
+    "arrivalTime": "2026-05-20T13:00:00"
+  }
 
 Get:        GET  /api/schedule/1
-List:       GET  /api/schedule/1/10
+List:       GET  /api/schedule?page=1&size=10
 Delete:     DELETE /api/schedule/1
 Find/Train: GET  /api/schedule/train/1
 Find/Src:   GET  /api/schedule/source/1
@@ -182,11 +191,11 @@ Update:
     "coachId": 1,
     "seatNumber": "A1",
     "totalAmount": 1200.0,
-    "status": "CONFIRMED"
+    "status": "BOOKED"
   }
 
 Get:     GET /api/ticket/1
-List:    GET /api/ticket/1/10
+List:    GET /api/ticket?page=1&size=10
 Delete:  DELETE /api/ticket/1
 ByUser:  GET /api/ticket/user/1
 BySched: GET /api/ticket/schedule/1
@@ -200,7 +209,7 @@ Book:
     "seatNumber": "A1",
     "totalAmount": 1200.0
   }
-  Response: { "id": 1, "status": "CONFIRMED", ... }
+  Response: { "id": 1, "status": "BOOKED", ... }
 
 Return: POST  /api/ticket/return/1
   Response: { "id": 1, "refundAmount": 1080.0, "status": "RETURNED", ... }
@@ -232,7 +241,7 @@ Update:
   }
 
 Get:       GET /api/food-item/1
-List:      GET /api/food-item/1/10
+List:      GET /api/food-item?page=1&size=10
 Delete:    DELETE /api/food-item/1
 Category:  GET /api/food-item/category/Main%20Course
 Avail:     GET /api/food-item/check-availability/1/5  Response: true/false
@@ -246,29 +255,28 @@ Save:
   POST /api/food-order
   {
     "ticketId": 1,
-    "totalAmount": 500.0,
-    "status": "PENDING"
+    "totalAmount": 500.0
   }
 
 Update:
   PUT /api/food-order
-  { "id": 1, "ticketId": 1, "totalAmount": 550.0, "status": "PLACED" }
+  { "id": 1, "ticketId": 1, "totalAmount": 550.0 }
 
 Get:       GET /api/food-order/1
-List:      GET /api/food-order/1/10
+List:      GET /api/food-order?page=1&size=10
 Delete:    DELETE /api/food-order/1
 ByTicket:  GET /api/food-order/ticket/1
 
 Place:
   POST /api/food-order/place
-  { "id": 1, "ticketId": 1, "totalAmount": 500.0, "status": "PENDING" }
+  { "ticketId": 1, "totalAmount": 500.0 }
   Response: { "id": 1, "status": "PLACED", ... }
 
 Status: PUT /api/food-order/status/1/PLACED
 
 
 9. Food Order Details
-=====================
+======================
 
 Save:
   POST /api/food-order-detail
@@ -279,7 +287,7 @@ Update:
   { "id": 1, "orderId": 1, "foodItemId": 2, "quantity": 1, "subTotal": 20.0 }
 
 Get:      GET /api/food-order-detail/1
-List:     GET /api/food-order-detail/1/10
+List:     GET /api/food-order-detail?page=1&size=10
 Delete:   DELETE /api/food-order-detail/1
 ByOrder:  GET /api/food-order-detail/order/1
 
@@ -305,7 +313,7 @@ Update:
   }
 
 Get:    GET /api/return-policy/1
-List:   GET /api/return-policy/1/10
+List:   GET /api/return-policy?page=1&size=10
 Delete: DELETE /api/return-policy/1
 
 
@@ -334,7 +342,7 @@ Update:
   }
 
 Get:    GET /api/train-status/1
-List:   GET /api/train-status/1/10
+List:   GET /api/train-status?page=1&size=10
 Delete: DELETE /api/train-status/1
 ByTrain: GET /api/train-status/train/1
 
